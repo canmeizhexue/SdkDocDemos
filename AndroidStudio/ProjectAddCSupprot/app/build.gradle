@@ -1,0 +1,91 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "com.canmeizhexue.projectaddcsupprot"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk {
+            // Specifies the ABI configurations of your native
+            // libraries Gradle should build and package with your APK.
+            // 指定只生成指定ABI的so,并打包到apk里面去
+            abiFilters 'armeabi', 'armeabi-v7a',
+                    'arm64-v8a'
+        }
+        //为 CMake 或 ndk-build 指定可选参数和标志。与 defaultConfig {} 块中的其他属性类似，您也可以在构建配置中为每个产品风味重写这些属性。
+        externalNativeBuild {
+            cmake {
+                // 如果这个地方指定了abiFilters,那么gradle会构建下面这几种ABI的so,不过仅会封装您在 defaultConfig.ndk{} 块中指定的配置
+                //也就是说可以控制到生成不同ABI的so,,然后只往apk里面打包指定ABI的so文件
+                abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a',
+                        'arm64-v8a'
+
+                // Passes optional arguments to CMake.
+                arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_TOOLCHAIN=clang"
+
+                // Sets optional flags for the C compiler.
+                cFlags "-D_EXAMPLE_C_FLAG1", "-D_EXAMPLE_C_FLAG2"
+
+                // Sets a flag to enable format macro constants for the C++ compiler.
+                cppFlags "-D__STDC_FORMAT_MACROS"
+            }
+            // or ndkBuild {...}
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    //配置productFlavor
+    productFlavors {
+
+        demo {
+            //CMake或者ndk-build可以配置一次生成多个so,
+            // 在productFlavor里面配置，使用 targets 属性仅为给定productFlavor构建和封装生成的库中的一部分
+/*            externalNativeBuild {
+                cmake {
+
+                    // Specifies which native libraries to build and package for this
+                    // product flavor. If you don't configure this property, Gradle
+                    // builds and packages all shared object libraries that you define
+                    // in your CMake or ndk-build project.
+                    targets "native-lib-demo"
+                }
+            }*/
+        }
+
+        paid {
+            //CMake或者ndk-build可以配置一次生成多个so,
+            // 在productFlavor里面配置，使用 targets 属性仅为给定productFlavor构建和封装生成的库中的一部分
+/*            externalNativeBuild {
+                cmake {
+
+                    targets "native-lib-paid"
+                }
+            }*/
+        }
+    }
+    // 将gradle和CMake进行关联，，，，，，
+    externalNativeBuild {
+        cmake {
+            path 'CMakeLists.txt'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
+}
