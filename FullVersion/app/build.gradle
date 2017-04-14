@@ -1,0 +1,57 @@
+apply plugin: 'com.android.application'
+
+/**config目录下面的应用代码检查，因为config和当前的build.gradle不在同一个目录*/
+apply from: '../config/quality.gradle'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "com.canmeizhexue.silence.fullversion"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    //配置lint
+    lintOptions {
+        //命令行输入 lint --list可以查看支持的issure ids
+        // Turns off checks for the issue IDs you specify.
+        //禁止检查项
+        disable 'TypographyFractions', 'TypographyQuotes'
+        // Turns on checks for the issue IDs you specify. These checks are in
+        // addition to the default lint checks.
+        // 默认项目之外添加的检查项
+        enable 'RtlHardcoded', 'RtlCompat', 'RtlEnabled'
+        // To enable checks for only a subset of issue IDs and ignore all others,
+        // list the issue IDs with the 'check' property instead. This property overrides
+        // any issue IDs you enable or disable using the properties above.
+        //开启某个子集合的检查
+        check 'NewApi', 'InlinedApi'
+        // If set to true, turns off analysis progress reporting by lint.
+        quiet true
+        // if set to true (default), stops the build if errors are found.
+        //发现错误时，是否停止构建
+        abortOnError false
+        // if true, only report errors.
+        //是否忽略警告
+        ignoreWarnings true
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
+}
